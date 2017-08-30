@@ -1,7 +1,7 @@
 <?php
 set_time_limit(0);
 date_default_timezone_set('UTC');
-require __DIR__.'/vendor/autoload.php';
+require '../vendor/autoload.php';
 
 use Symfony\Component\Yaml\Yaml;
 use Sgmendez\Json\Json;
