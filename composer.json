@@ -1,0 +1,14 @@
+{
+    "require": {
+        "silex/silex": "^2.0.4",
+        "monolog/monolog": "^1.22",
+        "twig/twig": "^2.0",
+        "symfony/twig-bridge": "^3",
+        "mgp25/instagram-php": "dev-master",
+        "symfony/yaml": "^3.3",
+        "sgmendez/json": "^1.0"
+    },
+    "require-dev": {
+        "heroku/heroku-buildpack-php": "*"
+    }
+}
