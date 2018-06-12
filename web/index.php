@@ -1,19 +1,17 @@
 <?php
 set_time_limit(0);
 date_default_timezone_set('UTC');
-require '../vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 
 use Symfony\Component\Yaml\Yaml;
 use Sgmendez\Json\Json;
 
 $json = new Json();
 
-die(';D');
-
 // read json
 try
 {
-    $dataArray = $json->decodeFile('./posts.json');
+    $dataArray = $json->decodeFile(__DIR__ . '/../posts.json');
     echo '<pre>';
     print_r($dataArray);
 }
@@ -24,7 +22,7 @@ catch (Exception $ex)
 }
 
 #################################### CONFIG ####################################
-$config = Yaml::parse(file_get_contents('./config.yml'));
+$config = Yaml::parse(file_get_contents(__DIR__ . '/../config.yml'));
 $debug = true;
 $truncatedDebug = false;
 ################################################################################
@@ -33,12 +31,10 @@ $ig = new \InstagramAPI\Instagram($debug, $truncatedDebug);
 
 // authentication
 try {
-    $ig->setUser(
+    $ig->login(
         $config['instagram']['credentials']['username'],
         $config['instagram']['credentials']['password']
     );
-
-    $ig->login();
 } catch (\Exception $e) {
     echo 'Something went wrong: '.$e->getMessage()."\n";
     exit(0);
@@ -60,15 +56,16 @@ foreach ($dataArray as $key => $post) {
 
     try {
         $ch = curl_init($post['file']);
-        $fp = fopen('./image.jpg', 'wb');
+        $fp = fopen(__DIR__ . '/../image.jpg', 'wb');
         curl_setopt($ch, CURLOPT_FILE, $fp);
         curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_exec($ch);
         curl_close($ch);
         fclose($fp);
 
-        $ig->timeline->uploadPhoto('./image.jpg', ['caption' => $post['caption']]);
-        unlink('./image.jpg');
+        $resizer = new \InstagramAPI\MediaAutoResizer(__DIR__ . '/../image.jpg');
+        $ig->timeline->uploadPhoto($resizer->getFile(), ['caption' => $post['caption']]);
+        unlink(__DIR__ . '/../image.jpg');
     } catch (\Exception $e) {
         echo 'Something went wrong: '.$e->getMessage()."\n";
     }
